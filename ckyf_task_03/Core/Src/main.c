@@ -94,6 +94,19 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		if(HAL_GPIO_ReadPin(GPIOA ,GPIO_PIN_9) == GPIO_PIN_SET)
+		{
+			HAL_Delay(20);
+			if(HAL_GPIO_ReadPin(GPIOA ,GPIO_PIN_9) == GPIO_PIN_SET)
+			{
+				HAL_GPIO_WritePin(GPIOC ,GPIO_PIN_13 ,GPIO_PIN_SET);
+				while(HAL_GPIO_ReadPin(GPIOA ,GPIO_PIN_9) == GPIO_PIN_SET);
+			}
+		}
+		else
+		{
+			HAL_GPIO_WritePin(GPIOC ,GPIO_PIN_13 ,GPIO_PIN_RESET);
+		}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -154,10 +167,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
 
   /*Configure GPIO pin : PC13 */
   GPIO_InitStruct.Pin = GPIO_PIN_13;
@@ -168,9 +178,8 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : PA9 */
   GPIO_InitStruct.Pin = GPIO_PIN_9;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
