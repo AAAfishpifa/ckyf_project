@@ -42,7 +42,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+volatile uint8_t exti_flag=0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -87,25 +87,21 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-
+	
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		if(HAL_GPIO_ReadPin(GPIOA ,GPIO_PIN_9) == GPIO_PIN_SET)
+		if(exti_flag==1)
 		{
 			HAL_Delay(20);
-			if(HAL_GPIO_ReadPin(GPIOA ,GPIO_PIN_9) == GPIO_PIN_SET)
+			if(HAL_GPIO_ReadPin(GPIOA ,GPIO_PIN_9) == GPIO_PIN_RESET)
 			{
-				HAL_GPIO_WritePin(GPIOC ,GPIO_PIN_13 ,GPIO_PIN_SET);
-				while(HAL_GPIO_ReadPin(GPIOA ,GPIO_PIN_9) == GPIO_PIN_SET);
+				HAL_GPIO_TogglePin(GPIOC ,GPIO_PIN_13);
 			}
-		}
-		else
-		{
-			HAL_GPIO_WritePin(GPIOC ,GPIO_PIN_13 ,GPIO_PIN_RESET);
+			exti_flag=0;
 		}
     /* USER CODE END WHILE */
 
@@ -178,9 +174,13 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : PA9 */
   GPIO_InitStruct.Pin = GPIO_PIN_9;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 2, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
@@ -188,7 +188,13 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_PIN)
+{
+	if(GPIO_PIN==GPIO_PIN_9)
+	{
+		exti_flag=1;
+	}
+}
 /* USER CODE END 4 */
 
 /**
