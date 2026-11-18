@@ -237,7 +237,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	if(htim->Instance == TIM2)
 	{
 		count++;
-		if(count>=500)//after 500 times,reset count
+		if(count>=250)//after 250 times,reset count
 		{
 			count=0;
 			HAL_GPIO_TogglePin (GPIOA ,GPIO_PIN_9);
