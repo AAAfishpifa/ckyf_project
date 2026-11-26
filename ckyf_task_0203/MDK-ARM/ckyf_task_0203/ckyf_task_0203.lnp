@@ -1,0 +1,25 @@
+--cpu Cortex-M3
+"ckyf_task_0203\startup_stm32f103xb.o"
+"ckyf_task_0203\main.o"
+"ckyf_task_0203\stm32f1xx_it.o"
+"ckyf_task_0203\stm32f1xx_hal_msp.o"
+"ckyf_task_0203\stm32f1xx_hal_gpio_ex.o"
+"ckyf_task_0203\stm32f1xx_hal_adc.o"
+"ckyf_task_0203\stm32f1xx_hal_adc_ex.o"
+"ckyf_task_0203\stm32f1xx_hal.o"
+"ckyf_task_0203\stm32f1xx_hal_rcc.o"
+"ckyf_task_0203\stm32f1xx_hal_rcc_ex.o"
+"ckyf_task_0203\stm32f1xx_hal_gpio.o"
+"ckyf_task_0203\stm32f1xx_hal_dma.o"
+"ckyf_task_0203\stm32f1xx_hal_cortex.o"
+"ckyf_task_0203\stm32f1xx_hal_pwr.o"
+"ckyf_task_0203\stm32f1xx_hal_flash.o"
+"ckyf_task_0203\stm32f1xx_hal_flash_ex.o"
+"ckyf_task_0203\stm32f1xx_hal_exti.o"
+"ckyf_task_0203\stm32f1xx_hal_tim.o"
+"ckyf_task_0203\stm32f1xx_hal_tim_ex.o"
+"ckyf_task_0203\system_stm32f1xx.o"
+--strict --scatter "ckyf_task_0203\ckyf_task_0203.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "ckyf_task_0203.map" -o ckyf_task_0203\ckyf_task_0203.axf
