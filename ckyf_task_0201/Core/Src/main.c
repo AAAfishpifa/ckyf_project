@@ -43,13 +43,13 @@
 TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
-uint8_t mode=0;//0 = bu shan  1 = shan
-uint8_t led=0;//0 = mie  1 = liang
-volatile uint8_t shortflag=0;//flag is biao zhi
+uint8_t mode=0;//0 = 不闪  1 = 闪
+uint8_t led=0;//0 = 灭  1 = 亮
+volatile uint8_t shortflag=0;//flag是标志
 volatile uint8_t longflag=0;
-static uint8_t count=0;//count is ji shu qi(xiao dou shi yong)
-static uint8_t press=0;//press is shi fou an zhu an niu(0 is fou, 1 is shi)
-static uint16_t time=0;//an xia de shi jian
+static uint8_t count=0;//count是计数器(用于消抖)
+static uint8_t press=0;//press判断是否按下按钮(0是"否", 1是"是")
+static uint16_t time=0;//按下的时间
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,60 +96,60 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-	HAL_TIM_Base_Start_IT(&htim2);//start TIM2
+	HAL_TIM_Base_Start_IT(&htim2);//启动TIM2
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
-		if(shortflag==1)
+		if(shortflag == 1)
 		{
-			shortflag=0;//reset flag
+			shortflag=0;
 			if(mode == 0)
 			{
-				led =! led;//shen mi fan zhuan
+				led=!led;//翻转灯的状态
 				if(led == 1)
 				{
-					HAL_GPIO_WritePin(GPIOC ,GPIO_PIN_13 ,GPIO_PIN_RESET);//liang jiu mie
+					HAL_GPIO_WritePin(GPIOC ,GPIO_PIN_13 ,GPIO_PIN_RESET);
 				}
 				else
-				{
-					HAL_GPIO_WritePin(GPIOC ,GPIO_PIN_13 ,GPIO_PIN_SET);//mie jiu liang
+				{	
+					HAL_GPIO_WritePin(GPIOC ,GPIO_PIN_13 ,GPIO_PIN_SET);
 				}
 			}
 		}
-		if(longflag==1)
+		if(longflag == 1)
 		{
-			longflag=0;//reset flag
+			longflag=0;
 			if(mode == 0)
 			{
-				mode=1;//start shan
+				mode=1;
 			}
 			else
 			{
-				mode=0;//stop shan
+				mode=0;
 				if(led == 1)
 				{
-					HAL_GPIO_WritePin(GPIOC ,GPIO_PIN_13 ,GPIO_PIN_RESET);//liang jiu mie
+					HAL_GPIO_WritePin(GPIOC ,GPIO_PIN_13 ,GPIO_PIN_RESET);
 				}
 				else
-				{
-					HAL_GPIO_WritePin(GPIOC ,GPIO_PIN_13 ,GPIO_PIN_SET);//mie jiu liang
+				{	
+					HAL_GPIO_WritePin(GPIOC ,GPIO_PIN_13 ,GPIO_PIN_SET);
 				}
 			}
 		}
-		//5Hz shan shuo
 		if(mode == 1)
 		{
-			static uint32_t t=0;//t is shan de ji shi qi(also ji lu le last gettick)
+			static uint32_t t=0;//5Hz快闪的计数器
 			if(HAL_GetTick()-t>=100)
 			{
 				t=HAL_GetTick();
-				HAL_GPIO_TogglePin(GPIOC ,GPIO_PIN_13);
+				HAL_GPIO_TogglePin(GPIOC ,GPIO_PIN_13);//翻转板载led
 			}
 		}
+    /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -280,7 +280,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	if(htim->Instance == TIM2)//shi bu shi TIM2 gan de
+	if(htim->Instance == TIM2)//是不是TIM2干的(原本想将三个部分整合成一个程序)
 	{
 		if(HAL_GPIO_ReadPin(GPIOA ,GPIO_PIN_9) == GPIO_PIN_RESET)
 		{
@@ -290,8 +290,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				count=20;
 				if(press == 0)
 				{
-					press=1;//an xia qu le
-					time=0;//start ji shi
+					press=1;//按下去了
+					time=0;//开始计时
 				}
 				else
 				{
@@ -299,19 +299,19 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				}
 			}
 		}
-		else//song shou zhi hou
+		else//松手之后
 		{
-			count=0;//qing kong count
+			count=0;//清空count
 			if(press == 1)
 			{
-				press=0;//hui fu
+				press=0;//恢复
 				if(time<1000)
 				{
-					shortflag=1;//duan an wan cheng 1 time:)
+					shortflag=1;//短按完成 1 次:)
 				}
 				else
 				{
-					longflag=1;//chang an wan cheng 1 time
+					longflag=1;//长按完成 1 次
 				}
 			}
 		}
